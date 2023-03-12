@@ -25,7 +25,7 @@ namespace TrainsTestTask
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ApplicationViewModel();
+            DataContext = new ApplicationViewModel(new StationParser());
         }
     }
 }

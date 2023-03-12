@@ -23,7 +23,13 @@ namespace TrainsTestTask
         public List<Line> RenderedLines { get; set; } = new();
         public Dictionary<(Point, Point), Line> LineBetweenPointsDict { get; set; } = new();
 
-        public void RenderStationPathes(Canvas canvas)
+        public ApplicationViewModel(StationParser stationParser)
+        {
+            Station = stationParser.Parse("");
+            RenderStationPathes();
+        }
+
+        public void RenderStationPathes()
         {
             RenderedLines = new();
             LineBetweenPointsDict = new();
@@ -44,9 +50,6 @@ namespace TrainsTestTask
                     }
                 }
             }
-
-            foreach (var line in RenderedLines)
-                canvas.Children.Add(line);
         }
 
         private Line GetLine(Point point1, Point point2)
