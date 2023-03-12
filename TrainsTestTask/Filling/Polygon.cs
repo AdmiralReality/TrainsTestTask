@@ -34,7 +34,7 @@ public class Polygon
             return;
         }
 
-        var doesLayOutsidePolygon =
+        var doesLayOutsidePolygon = 
             sides.Where(side => !side.DoesBelongToInnerSide(x, y))
             .Any();
 

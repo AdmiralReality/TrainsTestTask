@@ -15,7 +15,7 @@ namespace TrainsTestTask
     {
         public string Name { get; set; }
 
-        List<Track> tracks = new();
+        List<Track> tracks = new(); // TODO: allow access via ReadOnlyCollection?
 
         Filling.Polygon polygon = null;
 

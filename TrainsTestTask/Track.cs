@@ -13,24 +13,6 @@ namespace TrainsTestTask
     {
         public List<Point> Points { get; set; } = new();
 
-        public bool IsHighlighted { get; set; } = false;
-
-        public void Highlight()
-        {
-            SetLineColor(Brushes.Red);
-            IsHighlighted = true;
-        }
-
-        public void RemoveHighlight()
-        {
-            SetLineColor(Brushes.Black);
-            IsHighlighted = false;
-        }
-
-        private void SetLineColor(Brush brush)
-        {
-            for (var i = 0; i < Points.Count - 1; i++)
-                Points[i].SetIntervalColor(Points[i + 1], brush);
-        }
+        public bool IsHighlighted { get; set; } = false; // TODO remove???
     }
 }
