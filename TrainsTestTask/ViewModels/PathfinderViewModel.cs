@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using TrainsTestTask.Helpers;
@@ -91,26 +93,48 @@ namespace TrainsTestTask.ViewModels
 
         public void TryPathfind()
         {
-            if (SelectedItemLeft is null || SelectedItemRight is null)
-                return;
+            // keeping joints selection on top of the list
 
-            // TODO remove previous track selection.
-            // TODO add selected points highlight.
+            // remove joints selection
+            while (Lines.Last() is Ellipse ellipse)
+                Lines.RemoveAt(Lines.Count - 1);
 
-            var lowerBound = currentTrack is null ? Lines.Count : Lines.Count - currentTrack.Points.Count;
-            for (var i = Lines.Count - 1; i > lowerBound; i--)
-                Lines.RemoveAt(i);
+            // remove old path and add new one
+            if (SelectedItemLeft is not null && SelectedItemRight is not null)
+            {
+                var lowerBound = currentTrack is null ? Lines.Count : Lines.Count - currentTrack.Points.Count;
 
-            currentTrack = pathfinder.Find(SelectedItemLeft, SelectedItemRight);
+                for (var i = Lines.Count - 1; i > lowerBound; i--)
+                    Lines.RemoveAt(i);
 
-            if (currentTrack is null)
-                return;
+                currentTrack = pathfinder.Find(SelectedItemLeft, SelectedItemRight);
 
-            var newLines = new List<Line>();
-            for (var i = 0; i < currentTrack.Points.Count - 1; i++)
-                newLines.Add(ViewModelLinesHelper.GetLine(currentTrack.Points[i], currentTrack.Points[i + 1], Brushes.Red));
+                if (currentTrack is not null)
+                {
 
-            newLines.ForEach(x => Lines.Add(x));
+                    var newLines = new List<Line>();
+                    for (var i = 0; i < currentTrack.Points.Count - 1; i++)
+                        newLines.Add(ViewModelLinesHelper.GetLine(currentTrack.Points[i], currentTrack.Points[i + 1], Brushes.Red));
+
+                    newLines.ForEach(x => Lines.Add(x));
+                }
+            }
+
+            // add new points selection (works even if there is no path currently)
+            foreach (var (point, brush) in new List<(Point, Brush)> { (SelectedItemLeft, Brushes.Blue), (SelectedItemRight, Brushes.Green) })
+            {
+                if (point is null)
+                    continue;
+
+                var height = 10;
+                var width = 10;
+
+                var ellipse = new Ellipse() { Height = height, Width = width, Stroke = brush, Fill = brush };
+                Canvas.SetLeft(ellipse, point.X - width / 2);
+                Canvas.SetTop(ellipse, point.Y - height / 2);
+                Lines.Add(ellipse);
+            }
+                
         }
 
         #region Interface implementation
