@@ -19,6 +19,8 @@ namespace TrainsTestTask.ViewModels
         Pathfinder pathfinder;
         Track currentTrack;
 
+        public Dictionary<(Point, Point), Line> LineBetweenPointsDict { get; set; } = new();
+
         private ObservableCollection<Shape> lines;
         public ObservableCollection<Shape> Lines
         {
@@ -30,8 +32,8 @@ namespace TrainsTestTask.ViewModels
             }
         }
 
-        private List<Point> itemsSourceLeft;
-        public List<Point> ItemsSourceLeft // Parks, Костыль - TemplateBinding не привязывает SelectedItem
+        private ObservableCollection<Point> itemsSourceLeft;
+        public ObservableCollection<Point> ItemsSourceLeft // Parks, Костыль - TemplateBinding не привязывает SelectedItem
         {
             get { return itemsSourceLeft; }
             private set
@@ -53,13 +55,13 @@ namespace TrainsTestTask.ViewModels
             }
         }
 
-        private List<Point> itemsSourceRight;
-        public List<Point> ItemsSourceRight
+        private ObservableCollection<Point> itemsSourceRight;
+        public ObservableCollection<Point> ItemsSourceRight
         {
             get { return itemsSourceRight; }
             set
             {
-                itemsSourceRight = (List<Point>)value;
+                itemsSourceRight = value;
                 OnPropertyChanged(nameof(ItemsSourceRight));
             }
         }
@@ -80,6 +82,11 @@ namespace TrainsTestTask.ViewModels
         {
             this.station = station;
             this.pathfinder = pathfinder;
+
+            (var lines, LineBetweenPointsDict) = ViewModelLinesHelper.BuildLinesForRendering(station);
+            Lines = new ObservableCollection<Shape>(lines);
+            ItemsSourceLeft = new ObservableCollection<Point>(station.Points);
+            ItemsSourceRight = new ObservableCollection<Point>(station.Points);
         }
 
         public void TryPathfind()
@@ -90,11 +97,14 @@ namespace TrainsTestTask.ViewModels
             // TODO remove previous track selection.
             // TODO add selected points highlight.
 
-            var lowerBound = Lines.Count - currentTrack.Points.Count;
-            for (var i = Lines.Count; i >= lowerBound; i--)
+            var lowerBound = currentTrack is null ? Lines.Count : Lines.Count - currentTrack.Points.Count;
+            for (var i = Lines.Count - 1; i > lowerBound; i--)
                 Lines.RemoveAt(i);
 
             currentTrack = pathfinder.Find(SelectedItemLeft, SelectedItemRight);
+
+            if (currentTrack is null)
+                return;
 
             var newLines = new List<Line>();
             for (var i = 0; i < currentTrack.Points.Count - 1; i++)

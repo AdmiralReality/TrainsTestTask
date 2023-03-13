@@ -17,8 +17,18 @@
     </Window.Resources>
     
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Content="Get Inside debug" Click="GetInsideDebug" Margin="5 5 5 5"/>
+        </StackPanel>
+
         <customControls:StationCustomControls
             x:Name="StationCustomControl"
+            Grid.Row="0"
             Shapes="{Binding Lines}"
             ItemsSourceLeft="{Binding ItemsSourceLeft}"
             ItemsSourceRight="{Binding ItemsSourceRight}"

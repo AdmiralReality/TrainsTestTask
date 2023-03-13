@@ -15,9 +15,10 @@ using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TrainsTestTask.PathfinderRestrictions;
+using TrainsTestTask.ViewModels;
 using TrainsTestTask.Views;
 
-namespace TrainsTestTask
+namespace TrainsTestTask.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

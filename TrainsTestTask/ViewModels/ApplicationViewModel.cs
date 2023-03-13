@@ -13,11 +13,12 @@ using System.Windows.Shapes;
 using TrainsTestTask.Commands;
 using TrainsTestTask.Helpers;
 
-namespace TrainsTestTask
+namespace TrainsTestTask.ViewModels
 {
     class ApplicationViewModel : INotifyPropertyChanged
     {
-        public Station Station { get; set; }
+        Station station;
+        Dictionary<(Point, Point), Line> lineBetweenPointsDict = new();
 
         // general-purpose lines of station for rendering.
         private ObservableCollection<Shape> lines;
@@ -79,13 +80,11 @@ namespace TrainsTestTask
             }
         }
 
-        public Dictionary<(Point, Point), Line> LineBetweenPointsDict { get; set; } = new();
-
         public ApplicationViewModel(Station station)
         {
-            Station = station;
-            ItemsSourceLeft = Station.Parks;
-            (var lines, LineBetweenPointsDict) = BuildLinesForRendering(Station);
+            this.station = station;
+            ItemsSourceLeft = this.station.Parks;
+            (var lines, lineBetweenPointsDict) = ViewModelLinesHelper.BuildLinesForRendering(this.station);
 
             Lines = new ObservableCollection<Shape>(lines);
 
@@ -93,31 +92,6 @@ namespace TrainsTestTask
             {
                 Brushes.Black, Brushes.Red, Brushes.Green, Brushes.Blue
             };
-        }
-
-        private (List<Shape>, Dictionary<(Point, Point), Line>) BuildLinesForRendering(Station station)
-        {
-            var lines = new List<Shape>();
-            var lineBetweenPointsDict = new Dictionary<(Point, Point), Line>();
-
-            foreach (var point in station.Points)
-            {
-                foreach (var collection in new List<List<Point>> { point.OutgoingPoints, point.IncomingPoints })
-                {
-                    foreach (var nextPoint in collection)
-                    {
-                        if (lineBetweenPointsDict.ContainsKey((point, nextPoint)) || lineBetweenPointsDict.ContainsKey((nextPoint, point)))
-                            continue;
-
-                        var line = ViewModelLinesHelper.GetLine(point, nextPoint);
-                        lines.Add(line);
-                        lineBetweenPointsDict.Add((point, nextPoint), line);
-                        lineBetweenPointsDict.Add((nextPoint, point), line);
-                    }
-                }
-            }
-
-            return (lines, lineBetweenPointsDict);
         }
 
         private void TryBuildPolygon()

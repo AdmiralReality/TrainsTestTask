@@ -26,7 +26,13 @@ namespace TrainsTestTask.Views
         {
             InitializeComponent();
 
-            var viewModel = new PathfinderViewModel(station, pathfinder);
+            DataContext = new PathfinderViewModel(station, pathfinder);
+        }
+
+        private void GetInsideDebug(object sender, RoutedEventArgs e)
+        {
+            // TODO remove
+            ;
         }
     }
 }
