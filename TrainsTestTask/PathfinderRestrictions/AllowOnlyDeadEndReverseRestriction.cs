@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TrainsTestTask.PathfinderRestrictions
 {
-    class AllowOnlyDeadEndReverseRestriction : IPathfinderRestriction
+    public class AllowOnlyDeadEndReverseRestriction : IPathfinderRestriction
     {
         public bool IsValid(Point? prev, Point current, Point next)
         {

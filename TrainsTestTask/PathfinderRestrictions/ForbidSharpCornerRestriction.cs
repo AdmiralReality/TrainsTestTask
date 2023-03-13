@@ -9,7 +9,7 @@ using static TrainsTestTask.Helpers.MathHelper;
 
 namespace TrainsTestTask.PathfinderRestrictions
 {
-    class ForbidSharpCornerRestriction : IPathfinderRestriction
+    public class ForbidSharpCornerRestriction : IPathfinderRestriction
     {
         public bool IsValid(Point? prev, Point current, Point next)
         {
