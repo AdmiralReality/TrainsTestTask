@@ -1,4 +1,4 @@
-﻿<Window x:Class="TrainsTestTask.MainWindow"
+﻿<Window x:Class="TrainsTestTask.Views.PathfinderWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,36 +6,23 @@
         xmlns:local="clr-namespace:TrainsTestTask"
         xmlns:customControls="clr-namespace:TrainsTestTask.CustomControls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="PathfinderWindow" Height="450" Width="800">
 
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="CustomControls/StationCustomControlsStyle.xaml" />
+                <ResourceDictionary Source="../CustomControls/StationCustomControlsStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
     
     <Grid>
-
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Content="Get Inside debug" Click="GetInsideDebug" Margin="5 5 5 5"/>
-            <Button Content="Open Pathfinder window" Click="OpenPathfinderWindow" Margin="5 5 5 5"/>
-        </StackPanel>
-        
         <customControls:StationCustomControls
-            Grid.Row="0"
             x:Name="StationCustomControl"
             Shapes="{Binding Lines}"
             ItemsSourceLeft="{Binding ItemsSourceLeft}"
             ItemsSourceRight="{Binding ItemsSourceRight}"
             SelectedItemLeft="{Binding SelectedItemLeft}"
             SelectedItemRight="{Binding SelectedItemRight}"/>
-
     </Grid>
 </Window>

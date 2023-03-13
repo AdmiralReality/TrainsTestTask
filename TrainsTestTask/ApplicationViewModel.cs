@@ -11,19 +11,20 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using TrainsTestTask.Commands;
+using TrainsTestTask.Helpers;
 
 namespace TrainsTestTask
 {
     class ApplicationViewModel : INotifyPropertyChanged
     {
-        public Station Station { get; set; } = new();
+        public Station Station { get; set; }
 
         // general-purpose lines of station for rendering.
         private ObservableCollection<Shape> lines;
         public ObservableCollection<Shape> Lines
         {
             get { return lines; }
-            private set 
+            private set
             {
                 lines = value;
                 OnPropertyChanged(nameof(Lines));
@@ -80,9 +81,9 @@ namespace TrainsTestTask
 
         public Dictionary<(Point, Point), Line> LineBetweenPointsDict { get; set; } = new();
 
-        public ApplicationViewModel(StationParser stationParser)
+        public ApplicationViewModel(Station station)
         {
-            Station = stationParser.Parse("");
+            Station = station;
             ItemsSourceLeft = Station.Parks;
             (var lines, LineBetweenPointsDict) = BuildLinesForRendering(Station);
 
@@ -108,7 +109,7 @@ namespace TrainsTestTask
                         if (lineBetweenPointsDict.ContainsKey((point, nextPoint)) || lineBetweenPointsDict.ContainsKey((nextPoint, point)))
                             continue;
 
-                        var line = GetLine(point, nextPoint);
+                        var line = ViewModelLinesHelper.GetLine(point, nextPoint);
                         lines.Add(line);
                         lineBetweenPointsDict.Add((point, nextPoint), line);
                         lineBetweenPointsDict.Add((nextPoint, point), line);
@@ -117,19 +118,6 @@ namespace TrainsTestTask
             }
 
             return (lines, lineBetweenPointsDict);
-        }
-
-        private Line GetLine(Point point1, Point point2)
-        {
-            return new Line()
-            {
-                X1 = point1.X,
-                X2 = point2.X,
-                Y1 = point1.Y,
-                Y2 = point2.Y,
-                Stroke = Brushes.Black,
-                StrokeThickness = 3
-            };
         }
 
         private void TryBuildPolygon()

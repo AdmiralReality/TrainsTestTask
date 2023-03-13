@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using TrainsTestTask.Commands;
 
-namespace TrainsTestTask
+namespace TrainsTestTask.CustomControls
 {
     public class StationCustomControls : Control, INotifyPropertyChanged
     {

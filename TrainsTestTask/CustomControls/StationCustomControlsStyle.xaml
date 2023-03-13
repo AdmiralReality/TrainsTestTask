@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:TrainsTestTask"
-                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
+                    xmlns:customControls="clr-namespace:TrainsTestTask.CustomControls">
 
-    <ControlTemplate x:Key="StationCustomControlsTemplate" TargetType="{x:Type local:StationCustomControls}">
+    <ControlTemplate x:Key="StationCustomControlsTemplate" TargetType="{x:Type customControls:StationCustomControls}">
         <Grid>
 
             <Grid.RowDefinitions>
@@ -36,9 +36,9 @@
         </Grid>
     </ControlTemplate>
 
-    <Style x:Key="StationCustomControls" TargetType="{x:Type local:StationCustomControls}">
+    <Style x:Key="StationCustomControls" TargetType="{x:Type customControls:StationCustomControls}">
         <Setter Property="Template" Value="{StaticResource StationCustomControlsTemplate}"></Setter>
     </Style>
-    
-    <Style TargetType="{x:Type local:StationCustomControls}" BasedOn="{StaticResource StationCustomControls}" />
+
+    <Style TargetType="{x:Type customControls:StationCustomControls}" BasedOn="{StaticResource StationCustomControls}" />
 </ResourceDictionary>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TrainsTestTask.PathfinderRestrictions
 {
-    interface IPathfinderRestriction
+    public interface IPathfinderRestriction
     {
         bool IsValid(Point? prev, Point current, Point next);
     }

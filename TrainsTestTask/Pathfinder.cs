@@ -9,7 +9,7 @@ using TrainsTestTask.PathfinderRestrictions;
 
 namespace TrainsTestTask
 {
-    class Pathfinder
+    public class Pathfinder
     {
         IPathfinderRestriction[] restrictions;
 
@@ -18,7 +18,7 @@ namespace TrainsTestTask
             this.restrictions = restrictions;
         }
 
-        public Track? Find(Point from, Point to)
+        public Track? Find(Point from, Point to) // TODO caching???
         {
             var rootNode = new PathNode() { Point = from };
             var nodesToCheck = new List<PathNode>() { rootNode };

@@ -137,7 +137,7 @@ namespace TrainsTestTask
             straightTrackPark.AddTrack(straightTrack);
 
             var curveTrackPark = new Park();
-            curveTrackPark.Name = "Cure Track Park";
+            curveTrackPark.Name = "Curve Track Park";
             var cureTrack = new Track()
             {
                 Points = new()

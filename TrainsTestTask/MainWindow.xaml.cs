@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TrainsTestTask.PathfinderRestrictions;
+using TrainsTestTask.Views;
 
 namespace TrainsTestTask
 {
@@ -22,10 +24,40 @@ namespace TrainsTestTask
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Station station;
+        private Window window;
+        private Pathfinder pathfinder;
+
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ApplicationViewModel(new StationParser());
+
+            var parser = new StationParser();
+            station = parser.Parse("");
+
+            var restrictions = new IPathfinderRestriction[]
+            {
+                new AllowOnlyDeadEndReverseRestriction(),
+                new ForbidSharpCornerRestriction()
+            };
+
+            pathfinder = new Pathfinder(restrictions);
+
+            DataContext = new ApplicationViewModel(station);
+        }
+
+        private void GetInsideDebug(object sender, RoutedEventArgs e)
+        {
+            // TODO remove
+            ;
+        }
+
+        private void OpenPathfinderWindow(object sender, RoutedEventArgs e)
+        {
+            if (window is null || !window.IsLoaded)
+                window = new PathfinderWindow(station, pathfinder);
+
+            window.Show();
         }
     }
 }

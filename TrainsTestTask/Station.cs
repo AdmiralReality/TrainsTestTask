@@ -7,7 +7,7 @@ using System.Windows.Controls;
 
 namespace TrainsTestTask
 {
-    class Station
+    public class Station
     {
         public List<Point> Points = new();
         public List<Track> SavedTracks = new();
