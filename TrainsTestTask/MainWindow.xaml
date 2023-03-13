@@ -6,26 +6,25 @@
         xmlns:local="clr-namespace:TrainsTestTask"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="CustomControls/StationCustomControlsStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <!--TODO remove mocking data-->
-            <ComboBox Name="ComboBoxOne" Width="100" Margin="5 5 5 5">
-                <TextBlock>Foo</TextBlock>
-                <TextBlock>Bar</TextBlock>
-            </ComboBox>
+        <local:StationCustomControls
+            x:Name="StationCustomControl"
+            Shapes="{Binding Lines}"
+            ItemsSourceLeft="{Binding ItemsSourceLeft}"
+            ItemsSourceRight="{Binding ItemsSourceRight}"
+            SelectedItemLeft="{Binding SelectedItemLeft}"
+            SelectedItemRight="{Binding SelectedItemRight}"/>
 
-            <ComboBox Name="ComboBoxTwo" Width="100" Margin="5 5 5 5">
-                <TextBlock>Foo</TextBlock>
-                <TextBlock>Bar</TextBlock>
-            </ComboBox>
-        </StackPanel>
-
-        <Canvas Grid.Row="1"></Canvas>
+        <Button Height="50" Width="200" Content="Get Inside debug" Click="GetInsideDebug" />
     </Grid>
-
 </Window>

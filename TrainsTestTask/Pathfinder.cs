@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrainsTestTask.Helpers;
 using TrainsTestTask.PathfinderRestrictions;
 
 namespace TrainsTestTask
@@ -22,7 +23,7 @@ namespace TrainsTestTask
             var rootNode = new PathNode() { Point = from };
             var nodesToCheck = new List<PathNode>() { rootNode };
             // dict to check if path was already walked and how effectivly it was walked.
-            var edges = new Dictionary<(Point from, Point to), int>();
+            var edges = new Dictionary<(Point from, Point to), double>();
 
             PathNode targetNode = null;
             while (true)
@@ -57,7 +58,7 @@ namespace TrainsTestTask
                     // looking forward for new points to check.
                     foreach (var point in validPoints)
                     {
-                        var pathLength = 1; // TODO calculate path.
+                        var pathLength = MathHelper.GetLineSegmentLength(currentNode.Point, point);
                         var edge = (currentNode.Point, point);
                         var shouldUse = true;
                         
@@ -66,7 +67,7 @@ namespace TrainsTestTask
                         else if (pathLength < edges[edge]) // found more effective way
                             edges[edge] = pathLength;
                         else
-                            shouldUse = false; // if neither (point already there and not more effective) - no need to check.
+                            shouldUse = false; // if neither (point already there and no more effective) - no need to check.
 
                         if (shouldUse)
                             nextNodesToCheck.Add(new PathNode() { Point = point, Parent = currentCheckingNode, PathLength = currentCheckingNode.PathLength + 1 });

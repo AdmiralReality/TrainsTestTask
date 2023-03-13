@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 namespace TrainsTestTask
 {
     [DebuggerDisplay("({X}:{Y})")]
-    class Point
+    public class Point
     {
         public int X { get; set; }
         public int Y { get; set; }

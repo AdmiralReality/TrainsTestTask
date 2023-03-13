@@ -1,55 +1,122 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using TrainsTestTask.Commands;
 
 namespace TrainsTestTask
 {
-    class ApplicationViewModel
+    class ApplicationViewModel : INotifyPropertyChanged
     {
-        // TODO: provide parser/StationBuilder/etc?
-        // TODO: add selecting file for loading?
-
-        // TODO add station renderer from graph made of points.
-
         public Station Station { get; set; } = new();
 
-        // TODO selected track
+        // general-purpose lines of station for rendering.
+        private ObservableCollection<Shape> lines;
+        public ObservableCollection<Shape> Lines
+        {
+            get { return lines; }
+            private set 
+            {
+                lines = value;
+                OnPropertyChanged(nameof(Lines));
+            }
+        }
 
-        public List<Line> RenderedLines { get; set; } = new();
+        // park selection property.
+        private List<Park> itemsSourceLeft;
+        public List<Park> ItemsSourceLeft // Parks, Костыль - TemplateBinding не привязывает SelectedItem
+        {
+            get { return itemsSourceLeft; }
+            private set
+            {
+                itemsSourceLeft = value;
+                OnPropertyChanged(nameof(ItemsSourceLeft));
+            }
+        }
+
+        private Park selectedItemLeft;
+        public Park SelectedItemLeft // Selected Park, Костыль - TemplateBinding не привязывает SelectedItem
+        {
+            get { return selectedItemLeft; }
+            set
+            {
+                selectedItemLeft = (Park)value;
+                OnPropertyChanged(nameof(SelectedItemLeft));
+                TryBuildPolygon();
+            }
+        }
+
+        private List<Brush> itemsSourceRight;
+        public List<Brush> ItemsSourceRight
+        {
+            get { return itemsSourceRight; }
+            set
+            {
+                itemsSourceRight = (List<Brush>)value;
+                OnPropertyChanged(nameof(ItemsSourceRight));
+            }
+        }
+
+        private Brush selectedItemRight;
+        public Brush SelectedItemRight
+        {
+            get { return selectedItemRight; }
+            set
+            {
+                selectedItemRight = (Brush)value;
+                OnPropertyChanged(nameof(SelectedItemRight));
+                TryBuildPolygon();
+                TryChangePolygonColor();
+            }
+        }
+
         public Dictionary<(Point, Point), Line> LineBetweenPointsDict { get; set; } = new();
 
         public ApplicationViewModel(StationParser stationParser)
         {
             Station = stationParser.Parse("");
-            RenderStationPathes();
+            ItemsSourceLeft = Station.Parks;
+            (var lines, LineBetweenPointsDict) = BuildLinesForRendering(Station);
+
+            Lines = new ObservableCollection<Shape>(lines);
+
+            ItemsSourceRight = new List<Brush>()
+            {
+                Brushes.Black, Brushes.Red, Brushes.Green, Brushes.Blue
+            };
         }
 
-        public void RenderStationPathes()
+        private (List<Shape>, Dictionary<(Point, Point), Line>) BuildLinesForRendering(Station station)
         {
-            RenderedLines = new();
-            LineBetweenPointsDict = new();
+            var lines = new List<Shape>();
+            var lineBetweenPointsDict = new Dictionary<(Point, Point), Line>();
 
-            foreach (var point in Station.Points)
+            foreach (var point in station.Points)
             {
                 foreach (var collection in new List<List<Point>> { point.OutgoingPoints, point.IncomingPoints })
                 {
                     foreach (var nextPoint in collection)
                     {
-                        if (LineBetweenPointsDict.ContainsKey((point, nextPoint)) || LineBetweenPointsDict.ContainsKey((nextPoint, point)))
+                        if (lineBetweenPointsDict.ContainsKey((point, nextPoint)) || lineBetweenPointsDict.ContainsKey((nextPoint, point)))
                             continue;
 
                         var line = GetLine(point, nextPoint);
-                        RenderedLines.Add(line);
-                        LineBetweenPointsDict.Add((point, nextPoint), line);
-                        LineBetweenPointsDict.Add((nextPoint, point), line);
+                        lines.Add(line);
+                        lineBetweenPointsDict.Add((point, nextPoint), line);
+                        lineBetweenPointsDict.Add((nextPoint, point), line);
                     }
                 }
             }
+
+            return (lines, lineBetweenPointsDict);
         }
 
         private Line GetLine(Point point1, Point point2)
@@ -65,30 +132,43 @@ namespace TrainsTestTask
             };
         }
 
-        #region TrackHighlight
-        public void HighlightTrack(Track track)
+        private void TryBuildPolygon()
         {
-            var brush = Brushes.Red;
-            SetTrackColor(track, brush);
-            track.IsHighlighted = true;
+            if (SelectedItemLeft is null || SelectedItemRight is null)
+                return;
+
+            var park = SelectedItemLeft;
+            var points = park.GetPolygonPoints();
+
+            var renderPolygon = new System.Windows.Shapes.Polygon();
+            renderPolygon.Stroke = SelectedItemRight ?? ItemsSourceRight.First();
+            renderPolygon.Fill = SelectedItemRight ?? ItemsSourceRight.First();
+            renderPolygon.Points = new PointCollection(points.Select(point => new System.Windows.Point(point.X, point.Y)));
+            renderPolygon.Opacity = 0.2;
+
+            while (Lines.Any() && Lines.FirstOrDefault() is System.Windows.Shapes.Polygon)
+                Lines.RemoveAt(0);
+
+            Lines.Insert(0, renderPolygon);
         }
 
-        public void LowlightTrack(Track track)
+        private void TryChangePolygonColor()
         {
-            var brush = Brushes.Black;
-            SetTrackColor(track, brush);
-            track.IsHighlighted = false;
+            if (!Lines.Any() || SelectedItemLeft is null || SelectedItemRight is null)
+                return;
+
+            var polygon = Lines.First() as Polygon;
+            polygon.Stroke = SelectedItemRight;
+            polygon.Fill = SelectedItemRight;
         }
 
-        private void SetTrackColor(Track track, Brush brush)
+        #region Interface implementation
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
-            for (var i = 0; i < track.Points.Count - 1; i++)
-            {
-                var line = LineBetweenPointsDict[(track.Points[i], track.Points[i + 1])];
-                line.Stroke = brush;
-            }
-                
+            if (PropertyChanged is not null)
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
-        #endregion TrackHighlight
+        #endregion Interface implementation
     }
 }

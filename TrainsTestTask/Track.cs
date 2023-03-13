@@ -9,7 +9,7 @@ using System.Windows.Shapes;
 
 namespace TrainsTestTask
 {
-    class Track
+    public class Track
     {
         public List<Point> Points { get; set; } = new();
 
